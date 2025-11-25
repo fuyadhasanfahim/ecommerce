@@ -23,7 +23,8 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
 const signinSchema = z.object({
-    email: z.email().nonempty('Email is required.'),
+    email: z.email('Invalid email address').nonempty('Email is required.'),
+
     password: z.string().nonempty('Password is required.'),
 });
 
@@ -38,7 +39,7 @@ export default function SigninForm() {
 
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
-    const isLoading = form.formState.isLoading || form.formState.isSubmitting;
+    const isLoading = form.formState.isSubmitting;
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -46,19 +47,21 @@ export default function SigninForm() {
 
     const onSubmit = async (data: z.infer<typeof signinSchema>) => {
         try {
-            setShowPassword(false);
-
             const res = await signIn.email(data);
 
-            if (res.data?.user) {
-                toast.success('Signed in successfully.');
-                form.reset();
-                router.push('/dashboard');
-            } else {
-                toast.error(res.error?.message || 'Failed to sign in.');
+            if (res.error) {
+                toast.error(res.error.message || 'Failed to sign in.');
+                return;
             }
+
+            toast.success('Signed in successfully.');
+            form.reset();
+
+            router.push('/dashboard');
         } catch (error) {
             toast.error((error as Error).message || 'Something went wrong.');
+        } finally {
+            setShowPassword(false);
         }
     };
 
@@ -78,14 +81,14 @@ export default function SigninForm() {
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="space-y-6">
                             <div className="grid gap-3">
-                                <Label>
+                                <Label htmlFor="email">
                                     Email{' '}
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
+                                    id="email"
                                     type="email"
                                     placeholder="Enter your email"
-                                    required
                                     {...form.register('email')}
                                 />
                                 {form.formState.errors.email && (
@@ -95,24 +98,24 @@ export default function SigninForm() {
                                 )}
                             </div>
                             <div className="grid gap-3">
-                                <Label>
+                                <Label htmlFor="password">
                                     Password{' '}
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative">
                                     <Input
+                                        id="password"
                                         type={
                                             showPassword ? 'text' : 'password'
                                         }
                                         placeholder="Enter your password"
-                                        required
                                         {...form.register('password')}
                                     />
                                     <Button
                                         type="button"
-                                        variant={'link'}
+                                        variant="link"
                                         onClick={handleShowPassword}
-                                        className="font-serif absolute right-0 hover:cursor-pointer"
+                                        className="font-serif absolute right-1 top-1/2 -translate-y-1/2 px-3"
                                     >
                                         {showPassword ? 'Hide' : 'Show'}
                                     </Button>

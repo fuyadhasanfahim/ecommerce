@@ -10,9 +10,17 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { updateUser } from '@/lib/auth-client';
 
 export function ModeToggle() {
     const { setTheme } = useTheme();
+
+    const handleChange = async (theme: string) => {
+        await updateUser({
+            theme,
+        });
+        setTheme(theme);
+    };
 
     return (
         <DropdownMenu>
@@ -24,13 +32,13 @@ export function ModeToggle() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme('light')}>
+                <DropdownMenuItem onClick={() => handleChange('light')}>
                     Light
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                <DropdownMenuItem onClick={() => handleChange('dark')}>
                     Dark
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('system')}>
+                <DropdownMenuItem onClick={() => handleChange('system')}>
                     System
                 </DropdownMenuItem>
             </DropdownMenuContent>
