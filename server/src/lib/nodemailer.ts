@@ -8,7 +8,7 @@ function getTransporter() {
         transporter = createTransport({
             host: envConfig.smtp_host,
             port: envConfig.smtp_port,
-            secure: envConfig.smtp_secure === 'true' || true,
+            secure: envConfig.smtp_secure === 'true',
             auth: {
                 user: envConfig.smtp_user,
                 pass: envConfig.smtp_pass,

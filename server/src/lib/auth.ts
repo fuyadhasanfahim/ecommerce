@@ -9,6 +9,20 @@ export const auth = betterAuth({
     database: mongodbAdapter((await client()).db('ecommerce-dev'), {
         client: await client(),
     }),
+    user: {
+        additionalFields: {
+            role: {
+                type: 'string',
+                required: false,
+                defaultValue: 'stuff',
+            },
+            theme: {
+                type: 'string',
+                required: false,
+                defaultValue: 'system',
+            },
+        },
+    },
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
